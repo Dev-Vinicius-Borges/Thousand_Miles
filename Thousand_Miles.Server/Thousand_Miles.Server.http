@@ -1,0 +1,6 @@
+@Thousand_Miles.Server_HostAddress = http://localhost:5287
+
+GET {{Thousand_Miles.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
