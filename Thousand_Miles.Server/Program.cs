@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ThousandMiles.Server.Database;
+using ThousandMiles.Server.Models.Usuario;
 using ThousandMiles.Server.Services.Usuarios;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,7 @@ builder.Services.AddOpenApi();
 
 
 builder.Services.AddScoped<IUsuarioInterface, UsuarioService>();
+builder.Services.AddScoped<IPasswordHasher<UsuarioModel>, PasswordHasher<UsuarioModel>>();
 
 builder.Services.AddDbContext<AppDbContext>(option =>
 {

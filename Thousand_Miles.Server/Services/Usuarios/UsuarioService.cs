@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using ThousandMiles.Server.Database;
 using ThousandMiles.Server.Dto.Usuarios;
 using ThousandMiles.Server.Models;
