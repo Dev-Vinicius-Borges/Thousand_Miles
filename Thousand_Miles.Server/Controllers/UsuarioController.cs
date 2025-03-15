@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Thousand_Miles.Server.Dto.DadosPessoais;
 using ThousandMiles.Server.Dto.Usuarios;
 using ThousandMiles.Server.Models;
 using ThousandMiles.Server.Models.Usuario;
@@ -29,6 +30,12 @@ namespace ThousandMiles.Server.Controllers
         {
             var login = await _usuarioInterface.LoginDeUsuario(loginDeUsuarioDto);
             return Ok(login);
+        }
+
+        [HttpPost("Gerenciador/AtualizarDadosPessoais")]
+        public async Task<ActionResult<RespostaModel<DadosPessoaisModel>>> AtualizarDadosPessoais(AtualizarDadosPessoaisDto dadosPessoaisDto)
+        {
+            return Ok("AAAA");
         }
     }
 }
