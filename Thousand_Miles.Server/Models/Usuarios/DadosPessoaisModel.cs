@@ -21,7 +21,7 @@ namespace ThousandMiles.Server.Models.Usuario
         [Column(TypeName = "varchar(3)")]
         public string genero { get; set; }
 
-        public ICollection<DocumentoModel> documentos { get; set; }
+        public ICollection<DocumentoModel>? documentos { get; set; }
 
     }
 }
