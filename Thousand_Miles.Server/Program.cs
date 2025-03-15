@@ -8,6 +8,7 @@ using ThousandMiles.Server.Models.Usuario;
 using ThousandMiles.Server.Services.Usuarios;
 using System.Text;
 using DotNetEnv;
+using Thousand_Miles.Server.Middlewares.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +60,11 @@ app.UseHttpsRedirection();
 app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/Usuario/Registrar"), branch =>
 {
     branch.UseValidarRegistroDeUsuarioMiddleware();
+});
+
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/Usuario/Gerenciador"), branch =>
+{
+    branch.UseValidarTokenMiddleware();
 });
 
 app.UseAuthorization();
