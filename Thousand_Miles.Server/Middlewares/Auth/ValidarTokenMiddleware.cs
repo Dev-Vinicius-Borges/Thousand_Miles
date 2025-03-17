@@ -27,11 +27,25 @@ namespace Thousand_Miles.Server.Middlewares.Auth
                 {
                     var token = authHeader.ToString().Replace("Bearer ", "");
 
-                    if (!ValidarToken(token, out JwtSecurityToken jwtToken))
+                    try
+                    {
+                        if (!ValidarToken(token, out var jwtToken))
+                        {
+                            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                            resposta.Status = StatusCodes.Status403Forbidden;
+                            resposta.Mensagem = "Token inválido.";
+                            await context.Response.WriteAsJsonAsync(resposta);
+                            return;
+                        }
+
+                        var idUsuario = jwtToken.Claims.FirstOrDefault()?.Value;
+                        context.Items["id_usuario"] = idUsuario;
+                    }
+                    catch (Exception ex)
                     {
                         context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                        resposta.status = StatusCodes.Status403Forbidden;
-                        resposta.Mensagem = "Token inválido.";
+                        resposta.Status = StatusCodes.Status403Forbidden;
+                        resposta.Mensagem = ex.Message;
                         await context.Response.WriteAsJsonAsync(resposta);
                         return;
                     }
@@ -39,7 +53,7 @@ namespace Thousand_Miles.Server.Middlewares.Auth
                 else
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    resposta.status = StatusCodes.Status401Unauthorized;
+                    resposta.Status = StatusCodes.Status401Unauthorized;
                     resposta.Mensagem = "Token ausente.";
                     await context.Response.WriteAsJsonAsync(resposta);
                     return;
@@ -49,13 +63,14 @@ namespace Thousand_Miles.Server.Middlewares.Auth
             }
         }
 
-        private bool ValidarToken(string token, out JwtSecurityToken jwtToken)
+
+        private bool ValidarToken(string token, out JwtSecurityToken? jwtToken)
         {
             jwtToken = null;
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"));
+                var key = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET_KEY") ?? throw new ArgumentNullException());
 
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
@@ -71,11 +86,28 @@ namespace Thousand_Miles.Server.Middlewares.Auth
                 jwtToken = (JwtSecurityToken)validatedToken;
                 return true;
             }
-            catch
+            catch (SecurityTokenExpiredException)
             {
-                return false;
+                throw new Exception("O token expirou.");
+            }
+            catch (SecurityTokenInvalidSignatureException)
+            {
+                throw new Exception("A assinatura do token é inválida.");
+            }
+            catch (SecurityTokenInvalidIssuerException)
+            {
+                throw new Exception("O emissor do token não é válido.");
+            }
+            catch (SecurityTokenException ex)
+            {
+                throw new Exception($"Erro na validação do token: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro inesperado na validação do token: {ex.Message}");
             }
         }
+    
 
     }
 
