@@ -29,16 +29,28 @@ namespace Thousand_Miles.Server.Middlewares.Usuarios
                 var reqBody = await streamBody.ReadToEndAsync();
                 context.Request.Body.Position = 0;
 
-                RegistrarUsuarioDto registrarUsuarioDto = JsonSerializer.Deserialize<RegistrarUsuarioDto>(reqBody);
+                RegistrarUsuarioDto? registrarUsuarioDto = JsonSerializer.Deserialize<RegistrarUsuarioDto>(reqBody);
+
+                if (registrarUsuarioDto == null)
+                {
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    RespostaModel<UsuarioModel> resposta = new RespostaModel<UsuarioModel>
+                    {
+                        Status = StatusCodes.Status400BadRequest,
+                        Mensagem = "Dados de registro inválidos."
+                    };
+                    await context.Response.WriteAsJsonAsync(resposta);
+                    return;
+                }
 
                 RespostaModel<UsuarioModel> usuario = await usuarioService.BuscarUsuarioPorEmail(registrarUsuarioDto.email);
 
-                if (usuario.status == 200)
+                if (usuario.Status == 200)
                 {
                     context.Response.StatusCode = StatusCodes.Status409Conflict;
                     RespostaModel<UsuarioModel> resposta = new RespostaModel<UsuarioModel>
                     {
-                        status = StatusCodes.Status409Conflict,
+                        Status = StatusCodes.Status409Conflict,
                         Mensagem = "Tente com outras credenciais."
                     };
                     await context.Response.WriteAsJsonAsync(resposta);

@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Thousand_Miles.Server.Dto.DadosPessoais;
+﻿using Microsoft.AspNetCore.Mvc;
 using ThousandMiles.Server.Dto.Usuarios;
 using ThousandMiles.Server.Models;
 using ThousandMiles.Server.Models.Usuario;
 using ThousandMiles.Server.Services.Usuarios;
 
-namespace ThousandMiles.Server.Controllers
+namespace Thousand_Miles.Server.Controllers.Usuario
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -32,10 +30,10 @@ namespace ThousandMiles.Server.Controllers
             return Ok(login);
         }
 
-        [HttpPost("Gerenciador/AtualizarDadosPessoais")]
-        public async Task<ActionResult<RespostaModel<DadosPessoaisModel>>> AtualizarDadosPessoais(AtualizarDadosPessoaisDto dadosPessoaisDto)
+        [HttpGet("Gerenciador")]
+        public bool Test()
         {
-            return Ok("AAAA");
+            return true;
         }
     }
 }

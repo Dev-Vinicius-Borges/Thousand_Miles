@@ -9,6 +9,7 @@ using ThousandMiles.Server.Services.Usuarios;
 using System.Text;
 using DotNetEnv;
 using Thousand_Miles.Server.Middlewares.Auth;
+using Thousand_Miles.Server.Services.Enderecos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +18,9 @@ Env.Load();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUsuarioInterface, UsuarioService>();
+builder.Services.AddScoped<IEnderecoInterface, EnderecoService>();
 builder.Services.AddScoped<IPasswordHasher<UsuarioModel>, PasswordHasher<UsuarioModel>>();
 
 builder.Services.AddDbContext<AppDbContext>(option =>
@@ -41,7 +43,7 @@ builder.Services.AddAuthentication(option =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
         ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET_KEY")))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET_KEY") ?? throw new ArgumentNullException()))
     };
 });
 
@@ -62,7 +64,7 @@ app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/Usuario/Reg
     branch.UseValidarRegistroDeUsuarioMiddleware();
 });
 
-app.UseWhen(context => context.Request.Path.StartsWithSegments("/api/Usuario/Gerenciador"), branch =>
+app.UseWhen(context => context.Request.Path.Value?.Contains("Gerenciador") == true, branch =>
 {
     branch.UseValidarTokenMiddleware();
 });
