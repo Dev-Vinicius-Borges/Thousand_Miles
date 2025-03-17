@@ -11,12 +11,12 @@ namespace ThousandMiles.Server.Services.Usuarios
     public class UsuarioService: IUsuarioInterface
     {
         private readonly IPasswordHasher<UsuarioModel> _passwordHasher;
-        private readonly AppDbContext _context;
+        private readonly AppDbContext _contexto;
 
         public UsuarioService(IPasswordHasher<UsuarioModel> passwordHasher, AppDbContext context)
         {
             _passwordHasher = passwordHasher;
-            _context = context;
+            _contexto = context;
         }
 
         public async Task<RespostaModel<UsuarioModel>> AtualizarUsuario(AtualizarUsuarioDto atualizarUsuarioDto)
@@ -25,21 +25,29 @@ namespace ThousandMiles.Server.Services.Usuarios
 
             try
             {
-                var usuario = await _context.Usuarios.SingleOrDefaultAsync(u => u.id_usuario == atualizarUsuarioDto.id);
+                var usuario = await _contexto.Usuarios.SingleOrDefaultAsync(u => u.id_usuario == atualizarUsuarioDto.id);
+
+                if (usuario == null)
+                {
+                    resposta.Status = StatusCodes.Status404NotFound;
+                    resposta.Mensagem = "Usuário não encontrado.";
+                    return resposta;
+                }
 
                 usuario.email = atualizarUsuarioDto.email;
                 usuario.senha = atualizarUsuarioDto.senha;
 
-                await _context.SaveChangesAsync();
+                await _contexto.SaveChangesAsync();
 
-                resposta.status = StatusCodes.Status200OK;
+                resposta.Status = StatusCodes.Status200OK;
                 resposta.Mensagem = "Usuário atualizado com sucesso!";
 
                 return resposta;
 
-            }catch(Exception err)
+            }
+            catch (Exception err)
             {
-                resposta.status = StatusCodes.Status500InternalServerError;
+                resposta.Status = StatusCodes.Status500InternalServerError;
                 resposta.Mensagem = $"Erro no servidor: {err.Message}";
                 return resposta;
             }
@@ -50,16 +58,16 @@ namespace ThousandMiles.Server.Services.Usuarios
             RespostaModel<UsuarioModel> resposta = new RespostaModel<UsuarioModel>();
             try
             {
-                var usuario = await _context.Usuarios.SingleOrDefaultAsync(u => u.email == email);
+                var usuario = await _contexto.Usuarios.SingleOrDefaultAsync(u => u.email == email);
 
                 if (usuario == null)
                 {
-                    resposta.status = StatusCodes.Status404NotFound;
+                    resposta.Status = StatusCodes.Status404NotFound;
                     resposta.Mensagem = "Nenhum usuário encontrado com esse email.";
                     return resposta;
                 }
 
-                resposta.status = StatusCodes.Status200OK;
+                resposta.Status = StatusCodes.Status200OK;
                 resposta.Mensagem = "Usuário encontrado";
                 resposta.Dados = usuario;
 
@@ -67,7 +75,7 @@ namespace ThousandMiles.Server.Services.Usuarios
             }
             catch (Exception err)
             {
-                resposta.status = StatusCodes.Status500InternalServerError;
+                resposta.Status = StatusCodes.Status500InternalServerError;
                 resposta.Mensagem = $"Erro no servidor: {err.Message}";
                 return resposta;
             }
@@ -78,15 +86,15 @@ namespace ThousandMiles.Server.Services.Usuarios
             RespostaModel<UsuarioModel> resposta = new RespostaModel<UsuarioModel>();
             try
             {
-                var usuario = await _context.Usuarios.SingleOrDefaultAsync(u => u.id_usuario == id);
+                var usuario = await _contexto.Usuarios.SingleOrDefaultAsync(u => u.id_usuario == id);
 
                 if(usuario == null)
                 {
-                    resposta.status = StatusCodes.Status404NotFound;
+                    resposta.Status = StatusCodes.Status404NotFound;
                     resposta.Mensagem = "Nenhum usuário encontrado";
                 }
 
-                resposta.status = StatusCodes.Status200OK;
+                resposta.Status = StatusCodes.Status200OK;
                 resposta.Dados = usuario;
                 resposta.Mensagem = "Usuário encontrado";
 
@@ -94,7 +102,7 @@ namespace ThousandMiles.Server.Services.Usuarios
             } catch(Exception err)
             {
                 resposta.Mensagem = $"Erro no servidor {err.Message}";
-                resposta.status = StatusCodes.Status500InternalServerError;
+                resposta.Status = StatusCodes.Status500InternalServerError;
                 return resposta;
             }
         }
@@ -105,23 +113,31 @@ namespace ThousandMiles.Server.Services.Usuarios
             RespostaModel<UsuarioModel> resposta = new RespostaModel<UsuarioModel>();
             try
             {
-                var usuario = await _context.Usuarios.SingleOrDefaultAsync(usuario => usuario.email == loginDeUsuarioDto.email);
+                var usuario = await _contexto.Usuarios.SingleOrDefaultAsync(usuario => usuario.email == loginDeUsuarioDto.email);
 
-                var resultadoMatch = _passwordHasher.VerifyHashedPassword(null, usuario.senha, loginDeUsuarioDto.senha);
+                if (usuario == null)
+                {
+                    resposta.Status = StatusCodes.Status404NotFound;
+                    resposta.Mensagem = "Usuário não encontrado.";
+                    return resposta;
+                }
+
+                var resultadoMatch = _passwordHasher.VerifyHashedPassword(usuario, usuario.senha, loginDeUsuarioDto.senha);
 
                 if (resultadoMatch != PasswordVerificationResult.Success)
                 {
-                    resposta.status = StatusCodes.Status401Unauthorized;
+                    resposta.Status = StatusCodes.Status401Unauthorized;
                     resposta.Mensagem = "Senhas não conferem";
-                } else
+                }
+                else
                 {
                     Claim[] claims =
                     {
                         new Claim("id", usuario.id_usuario.ToString()),
                         new Claim("email", usuario.email.ToString()),
                     };
-                    TokenModel token = new TokenModel(claims);
-                    resposta.status = StatusCodes.Status200OK;
+                    TokenModel token = new TokenModel(claims, 10);
+                    resposta.Status = StatusCodes.Status200OK;
                     resposta.Mensagem = "Login realizado com sucesso!";
                     resposta.Token = token.Token;
                 }
@@ -129,11 +145,13 @@ namespace ThousandMiles.Server.Services.Usuarios
             }
             catch (Exception err)
             {
-                resposta.status = StatusCodes.Status500InternalServerError;
+                resposta.Status = StatusCodes.Status500InternalServerError;
                 resposta.Mensagem = $"Erro no servidor: {err.Message}";
                 return resposta;
             }
         }
+
+        // ...
 
         public async Task<RespostaModel<UsuarioModel>> RegistrarUsuario(RegistrarUsuarioDto registrarUsuarioDto)
         {
@@ -143,22 +161,25 @@ namespace ThousandMiles.Server.Services.Usuarios
                 var novoUsuario = new UsuarioModel()
                 {
                     email = registrarUsuarioDto.email,
-                    senha = _passwordHasher.HashPassword(null, registrarUsuarioDto.senha),
+                    senha = registrarUsuarioDto.senha,
                     status = true
                 };
 
-                _context.Add(novoUsuario);
-                await _context.SaveChangesAsync();
+                novoUsuario.senha = _passwordHasher.HashPassword(novoUsuario, registrarUsuarioDto.senha);
 
-                resposta.status = StatusCodes.Status201Created;
-                resposta.Dados = await _context.Usuarios.SingleOrDefaultAsync(u => u.email == registrarUsuarioDto.email);
+                _contexto.Add(novoUsuario);
+                await _contexto.SaveChangesAsync();
+
+                resposta.Status = StatusCodes.Status201Created;
+                resposta.Dados = await _contexto.Usuarios.SingleOrDefaultAsync(u => u.email == registrarUsuarioDto.email);
                 resposta.Mensagem = "Usuário cadastrado com sucesso!";
 
                 return resposta;
 
-            }catch (Exception err)
+            }
+            catch (Exception err)
             {
-                resposta.status = StatusCodes.Status500InternalServerError;
+                resposta.Status = StatusCodes.Status500InternalServerError;
                 resposta.Mensagem = $"Erro no servidor: {err.Message}";
                 return resposta;
             }
