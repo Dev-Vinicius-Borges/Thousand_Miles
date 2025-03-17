@@ -3,10 +3,10 @@ namespace ThousandMiles.Server.Dto.Usuarios
 {
     public class RegistrarUsuarioDto
     {
-        public string email { get; set; }
+        public required string email { get; set; }
 
-        public string senha { get; set; }
+        public required string senha { get; set; }
 
-        public byte status { get; set; }
+        public required byte status { get; set; }
     }
 }

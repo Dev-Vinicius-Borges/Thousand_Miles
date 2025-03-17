@@ -2,9 +2,9 @@
 {
     public class AtualizarUsuarioDto
     {
-        public int id { get; set; }
-        public string email { get; set; }
-        public string senha { get; set; }
+        public required int id { get; set; }
+        public required string email { get; set; }
+        public required string senha { get; set; }
 
     }
 }
