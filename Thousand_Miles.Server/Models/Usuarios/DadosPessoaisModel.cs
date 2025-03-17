@@ -10,16 +10,16 @@ namespace ThousandMiles.Server.Models.Usuario
         public int id_dados_pessoais { get; set; }
 
         [Column(TypeName = "varchar(50)")]
-        public string nome { get; set; }
+        public required string nome { get; set; }
 
         [Column(TypeName = "varchar(100)")]
-        public string sobrenome { get; set; }
+        public required string sobrenome { get; set; }
 
         [Column(TypeName = "date")]
-        public DateTime data_nascimento { get; set; }
+        public required DateTime data_nascimento { get; set; }
 
         [Column(TypeName = "varchar(3)")]
-        public string genero { get; set; }
+        public required string genero { get; set; }
 
         public ICollection<DocumentoModel>? documentos { get; set; }
 

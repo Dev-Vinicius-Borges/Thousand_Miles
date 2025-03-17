@@ -11,9 +11,9 @@ namespace ThousandMiles.Server.Models.Usuarios
         public int id_favoritos { get; set; }
 
         [JsonIgnore]
-        public UsuarioModel usuario { get; set; }
+        public required UsuarioModel usuario { get; set; }
 
         [JsonIgnore]
-        public ModeloModel modelo { get; set; }
+        public required ModeloModel modelo { get; set; }
     }
 }

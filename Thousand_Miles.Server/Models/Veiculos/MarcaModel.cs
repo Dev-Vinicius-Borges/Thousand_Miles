@@ -9,8 +9,8 @@ namespace ThousandMiles.Server.Models.Veiculo
         public int id_marca { get; set; }
 
         [Column(TypeName = "varchar(45)")]
-        public string nome_marca { get; set; }
+        public required string nome_marca { get; set; }
 
-        public string logo_marca { get; set; }
+        public required string logo_marca { get; set; }
     }
 }

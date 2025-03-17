@@ -10,15 +10,15 @@ namespace ThousandMiles.Server.Models.Usuario
         public int id_documento { get; set; }
 
         [Column(TypeName = "varchar(50)")]
-        public string numero_documento { get; set; }
+        public required string numero_documento { get; set; }
 
         [Column(TypeName = "date")]
-        public DateTime data_emissao { get; set; }
+        public required DateTime data_emissao { get; set; }
 
         [JsonIgnore]
-        public TipoDocumentoModel tipo_documento { get; set; }
+        public required TipoDocumentoModel tipo_documento { get; set; }
 
         [JsonIgnore]
-        public DadosPessoaisModel dados_pessoais { get; set; }
+        public required DadosPessoaisModel dados_pessoais { get; set; }
     }
 }

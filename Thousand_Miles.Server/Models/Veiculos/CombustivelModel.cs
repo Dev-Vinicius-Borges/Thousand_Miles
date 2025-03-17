@@ -9,6 +9,6 @@ namespace ThousandMiles.Server.Models.Veiculo
         public int id_combustivel { get; set; }
 
         [Column(TypeName = "varchar(45)")]
-        public string nome_combustivel { get; set; }
+        public required string nome_combustivel { get; set; }
     }
 }

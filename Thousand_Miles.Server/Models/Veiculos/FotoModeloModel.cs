@@ -9,15 +9,15 @@ namespace ThousandMiles.Server.Models.Veiculo
         [Key]
         public int id_foto_modelo { get; set; }
 
-        public string url_modelo { get; set; }
+        public required string url_modelo { get; set; }
 
         [Column(TypeName = "varchar(50)")]
-        public string tipo_conteudo { get; set; }
+        public required string tipo_conteudo { get; set; }
 
         [JsonIgnore]
-        public CoresModel cor { get; set; }
+        public required CoresModel cor { get; set; }
 
         [JsonIgnore]
-        public ModeloModel modelo { get; set; }
+        public required ModeloModel modelo { get; set; }
     }
 }

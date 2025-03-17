@@ -10,9 +10,8 @@ namespace ThousandMiles.Server.Models.Usuario
         public int id_bairro { get; set; }
 
         [Column(TypeName = "varchar(50)")]
-        public string nome_bairro { get; set; }
+        public required string nome_bairro { get; set; }
 
-        [JsonIgnore]
-        public CidadeModel cidade { get; set; }
+        public required CidadeModel cidade { get; set; }
     }
 }

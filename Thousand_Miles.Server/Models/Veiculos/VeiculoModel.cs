@@ -9,10 +9,10 @@ namespace ThousandMiles.Server.Models.Veiculo
         public int id_veiculo { get; set; }
 
         [Column(TypeName = "varchar(12)")]
-        public string plaxa { get; set; }
+        public required string placa { get; set; }
 
-        public bool disponibilidade { get; set; }
+        public required bool disponibilidade { get; set; }
 
-        public int ano_fabricacao { get; set; }
+        public required int ano_fabricacao { get; set; }
     }
 }

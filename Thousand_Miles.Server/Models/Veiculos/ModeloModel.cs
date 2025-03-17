@@ -10,25 +10,25 @@ namespace ThousandMiles.Server.Models.Veiculo
         public int id_modelo { get; set; }
 
         [Column(TypeName = "varchar(45)")]
-        public string nome_modelo { get; set; }
+        public required string nome_modelo { get; set; }
 
         [Column(TypeName = "tinyint")]
-        public byte assentos { get; set; }
+        public required byte assentos { get; set; }
 
-        public byte portas { get; set; }
+        public required byte portas { get; set; }
 
-        public string descricao_modelo { get; set; }
-
-        [JsonIgnore]
-        public MarcaModel marca { get; set; }
+        public required string descricao_modelo { get; set; }
 
         [JsonIgnore]
-        public CategoriaModel categoria { get; set; }
+        public required MarcaModel marca { get; set; }
 
         [JsonIgnore]
-        public CambioModel cambio { get; set; }
+        public required CategoriaModel categoria { get; set; }
 
         [JsonIgnore]
-        public CombustivelModel combustivel { get; set; }
+        public required CambioModel cambio { get; set; }
+
+        [JsonIgnore]
+        public required CombustivelModel combustivel { get; set; }
     }
 }

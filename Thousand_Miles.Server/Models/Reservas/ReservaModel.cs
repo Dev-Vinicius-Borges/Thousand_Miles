@@ -20,13 +20,13 @@ namespace ThousandMiles.Server.Models.Reservas
         public float preco_total { get; set; }
 
         [JsonIgnore]
-        public SeguroModel seguro { get; set; }
+        public SeguroModel? seguro { get; set; }
 
         [JsonIgnore]
-        public UsuarioModel usuario { get; set; }
+        public required UsuarioModel usuario { get; set; }
 
         [JsonIgnore]
-        public VeiculoModel veiculo { get; set; }
+        public required VeiculoModel veiculo { get; set; }
 
 
     }

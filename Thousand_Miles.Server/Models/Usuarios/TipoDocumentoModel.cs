@@ -9,7 +9,7 @@ namespace ThousandMiles.Server.Models.Usuario
         public int id_tipo_documento { get; set; }
 
         [Column(TypeName = "varchar(20)")]
-        public string tipo_documento { get; set; }
+        public required string tipo_documento { get; set; }
 
     }
 }

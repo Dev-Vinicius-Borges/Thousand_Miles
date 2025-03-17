@@ -10,15 +10,14 @@ namespace ThousandMiles.Server.Models.Usuario
         public int id_endereco { get; set; }
 
         [Column(TypeName = "varchar(50)")]
-        public string rua { get; set; }
+        public required string rua { get; set; }
 
         [Column(TypeName = "varchar(10)")]
-        public string numero { get; set; }
+        public required string numero { get; set; }
 
         [Column(TypeName = "varchar(11)")]
-        public string cep { get; set; }
+        public required string cep { get; set; }
 
-        [JsonIgnore]
-        public BairroModel bairro { get; set; }
+        public required BairroModel bairro { get; set; }
     }
 }

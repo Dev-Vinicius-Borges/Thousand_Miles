@@ -10,9 +10,9 @@ namespace ThousandMiles.Server.Models
         public string Token { get; set; }
         private readonly string _secretKey;
 
-        public TokenModel(Claim[] newClaims)
+        public TokenModel(Claim[] newClaims, int tempoDeExpiracaoEmSegundos)
         {
-            _secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
+            _secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY") ?? throw new ArgumentNullException();
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_secretKey);
             var claims = new List<Claim>();
@@ -25,7 +25,7 @@ namespace ThousandMiles.Server.Models
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddHours(3),
+                Expires = DateTime.UtcNow.AddSeconds(tempoDeExpiracaoEmSegundos),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
                 Audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")

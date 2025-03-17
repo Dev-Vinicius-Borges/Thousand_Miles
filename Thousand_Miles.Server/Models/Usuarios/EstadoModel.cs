@@ -10,10 +10,10 @@ namespace ThousandMiles.Server.Models.Usuario
         public int id_estado { get; set; }
 
         [Column(TypeName = "varchar(50)")]
-        public string nome_estado { get; set; }
+        public required string nome_estado { get; set; }
 
         [Column(TypeName = "varchar(3)")]
-        public string sigla { get; set; }
+        public required string sigla { get; set; }
 
     }
 }

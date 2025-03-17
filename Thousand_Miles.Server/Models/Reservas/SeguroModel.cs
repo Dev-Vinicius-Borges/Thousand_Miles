@@ -6,13 +6,13 @@ namespace ThousandMiles.Server.Models.Reservas
     public class SeguroModel
     {
         [Key]
-        public int id_seguro { get; set; }
+        public int Id_seguro { get; set; }
 
         [Column(TypeName = "varchar(50)")]
-        public string tipo_seguro { get; set; }
+        public required string tipo_seguro { get; set; }
 
-        public string descricao { get; set; }
+        public required string descricao { get; set; }
 
-        public float custo { get; set; }
+        public required float custo { get; set; }
     }
 }
