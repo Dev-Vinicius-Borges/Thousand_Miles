@@ -18,12 +18,12 @@ namespace Thousand_Miles.Server.Middlewares.Auth
             _serviceProvider = serviceProvider;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext contexto)
         {
             RespostaModel<UsuarioModel> resposta = new RespostaModel<UsuarioModel>();
             using (var scope = _serviceProvider.CreateScope())
             {
-                if (context.Request.Headers.TryGetValue("Authorization", out StringValues authHeader))
+                if (contexto.Request.Headers.TryGetValue("Authorization", out StringValues authHeader))
                 {
                     var token = authHeader.ToString().Replace("Bearer ", "");
 
@@ -31,35 +31,35 @@ namespace Thousand_Miles.Server.Middlewares.Auth
                     {
                         if (!ValidarToken(token, out var jwtToken))
                         {
-                            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                            contexto.Response.StatusCode = StatusCodes.Status403Forbidden;
                             resposta.Status = StatusCodes.Status403Forbidden;
                             resposta.Mensagem = "Token inválido.";
-                            await context.Response.WriteAsJsonAsync(resposta);
+                            await contexto.Response.WriteAsJsonAsync(resposta);
                             return;
                         }
 
                         var idUsuario = jwtToken.Claims.FirstOrDefault()?.Value;
-                        context.Items["id_usuario"] = idUsuario;
+                        contexto.Items["id_usuario"] = idUsuario;
                     }
                     catch (Exception ex)
                     {
-                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        contexto.Response.StatusCode = StatusCodes.Status403Forbidden;
                         resposta.Status = StatusCodes.Status403Forbidden;
                         resposta.Mensagem = ex.Message;
-                        await context.Response.WriteAsJsonAsync(resposta);
+                        await contexto.Response.WriteAsJsonAsync(resposta);
                         return;
                     }
                 }
                 else
                 {
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    contexto.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     resposta.Status = StatusCodes.Status401Unauthorized;
                     resposta.Mensagem = "Token ausente.";
-                    await context.Response.WriteAsJsonAsync(resposta);
+                    await contexto.Response.WriteAsJsonAsync(resposta);
                     return;
                 }
 
-                await _next(context);
+                await _next(contexto);
             }
         }
 
@@ -69,13 +69,13 @@ namespace Thousand_Miles.Server.Middlewares.Auth
             jwtToken = null;
             try
             {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET_KEY") ?? throw new ArgumentNullException());
+                var escutadorToken = new JwtSecurityTokenHandler();
+                var chave = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET_KEY") ?? throw new ArgumentNullException());
 
-                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                escutadorToken.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    IssuerSigningKey = new SymmetricSecurityKey(chave),
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
@@ -93,18 +93,6 @@ namespace Thousand_Miles.Server.Middlewares.Auth
             catch (SecurityTokenInvalidSignatureException)
             {
                 throw new Exception("A assinatura do token é inválida.");
-            }
-            catch (SecurityTokenInvalidIssuerException)
-            {
-                throw new Exception("O emissor do token não é válido.");
-            }
-            catch (SecurityTokenException ex)
-            {
-                throw new Exception($"Erro na validação do token: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Erro inesperado na validação do token: {ex.Message}");
             }
         }
     
