@@ -13,10 +13,10 @@ namespace ThousandMiles.Server.Services.Usuarios
         private readonly IPasswordHasher<UsuarioModel> _passwordHasher;
         private readonly AppDbContext _contexto;
 
-        public UsuarioService(IPasswordHasher<UsuarioModel> passwordHasher, AppDbContext context)
+        public UsuarioService(IPasswordHasher<UsuarioModel> passwordHasher, AppDbContext contexto)
         {
             _passwordHasher = passwordHasher;
-            _contexto = context;
+            _contexto = contexto;
         }
 
         public async Task<RespostaModel<UsuarioModel>> AtualizarUsuario(AtualizarUsuarioDto atualizarUsuarioDto)
@@ -107,6 +107,35 @@ namespace ThousandMiles.Server.Services.Usuarios
             }
         }
 
+        public async Task<RespostaModel<UsuarioModel>> DesativarConta(int id)
+        {
+            RespostaModel<UsuarioModel> resposta = new RespostaModel<UsuarioModel>();
+            try
+            {
+                UsuarioModel? usuario = await _contexto.Usuarios.SingleOrDefaultAsync(u => u.id_usuario == id);
+
+                if (usuario == null)
+                {
+                    resposta.Status = StatusCodes.Status404NotFound;
+                    resposta.Mensagem = "Usuário não encontrado.";
+                    return resposta;
+                }
+
+                usuario.status = false;
+
+                await _contexto.SaveChangesAsync();
+
+                resposta.Status = StatusCodes.Status200OK;
+                resposta.Mensagem = "Conta desativada com sucesso.";
+                return resposta;
+
+            }catch(Exception err)
+            {
+                resposta.Status = StatusCodes.Status500InternalServerError;
+                resposta.Mensagem = $"Erro no servidor: {err.Message}";
+                return resposta;
+            }
+        }
 
         public async Task<RespostaModel<UsuarioModel>> LoginDeUsuario(LoginDeUsuarioDto loginDeUsuarioDto)
         {
@@ -151,7 +180,6 @@ namespace ThousandMiles.Server.Services.Usuarios
             }
         }
 
-        // ...
 
         public async Task<RespostaModel<UsuarioModel>> RegistrarUsuario(RegistrarUsuarioDto registrarUsuarioDto)
         {

@@ -6,6 +6,9 @@ namespace Thousand_Miles.Server.Services.Enderecos
 {
     public interface IEnderecoInterface
     {
+        Task<RespostaModel<EnderecoModel>> CriarEndereco(CriarEnderecoDto criarEnderecoDto);
+        Task<RespostaModel<List<EnderecoModel>>> BuscarEnderecoPorNomeDaRua(string nomeDaRua);
         Task<RespostaModel<EnderecoModel>> AtualizarEndereco(AtualizarEnderecoDto atualizarEnderecoDto);
+        Task<RespostaModel<EnderecoModel>> DesativarEndereco(int idEndereco);
     }
 }

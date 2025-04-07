@@ -14,5 +14,7 @@ namespace ThousandMiles.Server.Services.Usuarios
         Task<RespostaModel<UsuarioModel>> BuscarUsuarioProId(int id);
 
         Task<RespostaModel<UsuarioModel>> AtualizarUsuario(AtualizarUsuarioDto atualizarUsuarioDto);
+
+        Task<RespostaModel<UsuarioModel>> DesativarConta(int id);
     }
 }
