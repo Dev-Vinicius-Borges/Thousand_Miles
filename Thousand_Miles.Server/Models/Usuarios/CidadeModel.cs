@@ -12,6 +12,7 @@ namespace ThousandMiles.Server.Models.Usuario
         [Column(TypeName = "varchar(50)")]
         public required string nome_cidade { get; set; }
 
+        [JsonIgnore]
         public required EstadoModel estado { get; set; }
 
     }

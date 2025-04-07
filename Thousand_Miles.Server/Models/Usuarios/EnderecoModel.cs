@@ -18,6 +18,9 @@ namespace ThousandMiles.Server.Models.Usuario
         [Column(TypeName = "varchar(11)")]
         public required string cep { get; set; }
 
+        public required bool status { get; set; }
+
+        [JsonIgnore]
         public required BairroModel bairro { get; set; }
     }
 }
