@@ -8,6 +8,7 @@ namespace Thousand_Miles.Server.Services.Enderecos
     {
         Task<RespostaModel<EnderecoModel>> CriarEndereco(CriarEnderecoDto criarEnderecoDto);
         Task<RespostaModel<List<EnderecoModel>>> BuscarEnderecoPorNomeDaRua(string nomeDaRua);
+        Task<RespostaModel<List<EnderecoModel>>> BuscarEnderecoPorCEP(string cep);
         Task<RespostaModel<EnderecoModel>> AtualizarEndereco(AtualizarEnderecoDto atualizarEnderecoDto);
         Task<RespostaModel<EnderecoModel>> DesativarEndereco(int idEndereco);
     }
