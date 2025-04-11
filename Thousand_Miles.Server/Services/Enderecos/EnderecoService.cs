@@ -51,17 +51,89 @@ namespace Thousand_Miles.Server.Services.Enderecos
 
         public Task<RespostaModel<List<EnderecoModel>>> BuscarEnderecoPorNomeDaRua(string nomeDaRua)
         {
-            throw new NotImplementedException();
+            RespostaModel<List<EnderecoModel>> resposta = new RespostaModel<List<EnderecoModel>>();
+            try
+            {
+                var enderecos = _contexto.Enderecos.Where(endereco => endereco.rua.Contains(nomeDaRua)).ToListAsync();
+                if (enderecos == null || !enderecos.Result.Any())
+                {
+                    resposta.Status = StatusCodes.Status404NotFound;
+                    resposta.Mensagem = "Nenhum endereço encontrado.";
+                    return Task.FromResult(resposta);
+                }
+
+                resposta.Status = StatusCodes.Status200OK;
+                resposta.Mensagem = "Endereços encontrados.";
+                resposta.Dados = enderecos.Result;
+
+                return Task.FromResult(resposta);
+            }
+            catch (Exception err)
+            {
+                resposta.Status = StatusCodes.Status500InternalServerError;
+                resposta.Mensagem = $"Erro no servidor: {err.Message}";
+                return Task.FromResult(resposta);
+            }
         }
 
         public Task<RespostaModel<EnderecoModel>> CriarEndereco(CriarEnderecoDto criarEnderecoDto)
         {
-            throw new NotImplementedException();
+            RespostaModel<EnderecoModel> resposta = new RespostaModel<EnderecoModel>();
+            try
+            {
+                var endereco = new EnderecoModel
+                {
+                    rua = criarEnderecoDto.rua,
+                    numero = criarEnderecoDto.numero,
+                    cep = criarEnderecoDto.cep,
+                    bairro = criarEnderecoDto.bairro
+                };
+
+                _contexto.Enderecos.Add(endereco);
+                _contexto.SaveChanges();
+
+                resposta.Status = StatusCodes.Status201Created;
+                resposta.Mensagem = "Endereço criado com sucesso.";
+                resposta.Dados = endereco;
+
+                return Task.FromResult(resposta);
+            }
+            catch (Exception err)
+            {
+                resposta.Status = StatusCodes.Status500InternalServerError;
+                resposta.Mensagem = $"Erro no servidor: {err.Message}";
+                return Task.FromResult(resposta);
+            }
         }
 
         public Task<RespostaModel<EnderecoModel>> DesativarEndereco(int idEndereco)
         {
-            throw new NotImplementedException();
+            RespostaModel<EnderecoModel> resposta = new RespostaModel<EnderecoModel>();
+            try
+            {
+                var endereco = _contexto.Enderecos.SingleOrDefaultAsync(endereco => endereco.id_endereco == idEndereco);
+                if (endereco == null)
+                {
+                    resposta.Status = StatusCodes.Status404NotFound;
+                    resposta.Mensagem = "Endereço não encontrado.";
+                    return resposta;
+                }
+
+                _contexto.Enderecos.Remove(endereco.Result);
+                _contexto.SaveChanges();
+
+                resposta.Status = StatusCodes.Status200OK;
+                resposta.Mensagem = "Endereço desativado com sucesso.";
+                resposta.Dados = endereco.Result;
+
+                return resposta;
+            }
+            catch (Exception err)
+            {
+                resposta.Status = StatusCodes.Status500InternalServerError;
+                resposta.Mensagem = $"Erro no servidor: {err.Message}";
+                return resposta;
+            }
         }
     }
 }
